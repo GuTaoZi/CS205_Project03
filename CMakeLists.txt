@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.16)
+project(Project03)
+aux_source_directory(./src DIR_SRC)
+include_directories(./inc)
+link_libraries(m)
+add_executable(matlib ${DIR_SRC})

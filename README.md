@@ -48,7 +48,7 @@
 
 ### 宏与结构体
 
-```cpp
+```c
 #define TYPE float
 #define float_equal(x, y) ((x-y)<1e-5&&(y-x)<1e-5)
 #define MATRIX_MAX_CAPACITY 100000000
@@ -76,7 +76,7 @@ typedef struct MatrixC
 
 ### 创建矩阵
 
-```cpp
+```c
 //Functions For Creating Matrices
 Matrix *create_empty(size_t row, size_t col);//空矩阵
 
@@ -101,7 +101,7 @@ Matrix *sub_matrix(Matrix *src, size_t row_begin, size_t col_begin, size_t row_e
 
 命名一目了然，简洁易懂，功能齐全，此处以创建空矩阵为例浅谈安全的实现：
 
-```cpp
+```c
 Matrix *create_empty(size_t row, size_t col)
 {
     if (row * col == 0)
@@ -133,7 +133,7 @@ Matrix *create_empty(size_t row, size_t col)
 
 ### 矩阵级别操作
 
-```cpp
+```c
 //Functions For Matrix Operations
 bool delete_matrix(Matrix **pmat);//安全删除
 
@@ -160,7 +160,7 @@ bool set_value(Matrix *pmat, size_t row, size_t col, TYPE value);//单点修改
 
 ### 删除矩阵
 
-```cpp
+```c
 bool delete_matrix(Matrix **pmat)
 {
     if (pmat == NULL)
@@ -196,7 +196,7 @@ bool delete_matrix(Matrix **pmat)
 
 ### 复制矩阵
 
-```cpp
+```c
 bool copy_matrix(Matrix **dest, Matrix *src)
 {
     if (src == NULL)
@@ -255,7 +255,7 @@ bool ref_matrix(Matrix **dest, Matrix *src)
 
 由于高斯消元求逆过程用到了按行拼接，此处对其进行简单讲解：
 
-```cpp
+```c
 Matrix *row_concat(Matrix *first, Matrix *second)
 {
     if (first == NULL || second == NULL)
@@ -302,7 +302,7 @@ Matrix *row_concat(Matrix *first, Matrix *second)
 
 ### 查询操作
 
-```cpp
+```c
 //Functions For Querying In Matrices
 size_t size_of(Matrix *pmat);//查询容量
 
@@ -325,7 +325,7 @@ bool equal(Matrix *first, Matrix *second);//矩阵判等
 
 求最值的思路是遍历`data`数组并逐个比较，方法朴素但安全，易于维护，下面简述可扩展的`extreme_value`函数：
 
-```cpp
+```c
 TYPE extreme_value(Matrix *src, bool (*cmp)(TYPE, TYPE))
 {
     if (src == NULL)
@@ -354,9 +354,11 @@ TYPE extreme_value(Matrix *src, bool (*cmp)(TYPE, TYPE))
 
 此处将函数指针作为第三参数传入，实现了“比较”过程的自定义可拓展，对于`TYPE`类型的数据，比较规则可以通过自定义`cmp`函数进行调整，灵感来自于`sort`的自定义比较函数。
 
+---
+
 ### 自定义矩阵运算
 
-```cpp
+```c
 //Functions For Customized Calculation
 TYPE plus(TYPE first, TYPE second);
 
@@ -376,13 +378,13 @@ Matrix *scalar_calc(Matrix *pmat, TYPE scalar, TYPE(*fun)(TYPE, TYPE));
 
 考虑到我们经常要对矩阵进行逐元素的运算，例如矩阵统一求相反数是逐元素一元运算，矩阵加减法是逐元素二元运算…为了减轻用户为了不同的运算而自行实现多个函数的压力，本项目将**一元、二元、矩阵与标量的运算**整合为**拓展性极强的函数**，用户只需要自定义好运算函数，传入即可对矩阵进行**逐元素的自定义运算**。例如用户要对矩阵中的每个元素求正弦，那么只需要传入`Math.h`内置的`sinf(float x)`即可：
 
-```cpp
+```c
 Matrix *sin_matrix = unary_calc(Matrix *pmat, sinf);
 ```
 
 代码部分选择二元运算进行展示：
 
-```cpp
+```c
 Matrix *binary_calc(Matrix *first, Matrix *second, TYPE (*fun)(TYPE, TYPE))
 {
     if (first == NULL)
@@ -419,7 +421,7 @@ Matrix *binary_calc(Matrix *first, Matrix *second, TYPE (*fun)(TYPE, TYPE))
 
 ### 矩阵计算
 
-```cpp
+```c
 //Functions For Matrix Calculation
 bool add_by(Matrix *augend, Matrix *addend);
 
@@ -452,7 +454,7 @@ bool divide_scalar(Matrix *pmat, TYPE scalar);
 
 以下是矩阵乘法的实现：
 
-```cpp
+```c
 Matrix *matrix_multiply(Matrix *multiplicand, Matrix *multiplier)
 {
     if (multiplicand == NULL || multiplier == NULL)
@@ -491,7 +493,7 @@ Matrix *matrix_multiply(Matrix *multiplicand, Matrix *multiplier)
 
 喜闻乐见的快速幂环节，具体原理为将指数二进制表示后，通过倍乘`base`矩阵将乘法次数优化到`log(power)`次，对于$O(n^3)$的矩阵乘法而言优化力度较为客观，代码如下：
 
-```cpp
+```c
 Matrix *matrix_pow(Matrix *base, size_t power)
 {
     if (base == NULL)
@@ -553,7 +555,7 @@ Matrix *matrix_pow(Matrix *base, size_t power)
 
 ### 矩阵变换
 
-```cpp
+```c
 //Functions For Matrix Transformations
 TYPE determinant(Matrix *pmat);
 
@@ -568,7 +570,7 @@ Matrix *Uptriangular(Matrix *pmat);
 
 ### 矩阵转置
 
-```cpp
+```c
 Matrix *transpose(Matrix *pmat)
 {
     if (pmat == NULL)
@@ -592,7 +594,7 @@ Matrix *transpose(Matrix *pmat)
 
 ### 上三角化
 
-```cpp
+```c
 Matrix *Uptriangular(Matrix *pmat)
 {
     if (pmat == NULL)
@@ -681,7 +683,7 @@ Matrix *Uptriangular(Matrix *pmat)
 
 ### 矩阵求逆
 
-```cpp
+```c
 Matrix *inverse(Matrix *pmat)
 {
     if (pmat == NULL)
@@ -779,7 +781,7 @@ Matrix *inverse(Matrix *pmat)
 
 ### 报错与警告
 
-```cpp
+```c
 //Functions For Debugging, Error & Warning
 void print_matrix(Matrix *pmat, int precision);
 
@@ -792,7 +794,7 @@ void print_warning(char *w_type, char *w_info);
 
 ### 输出矩阵
 
-```cpp
+```c
 void print_matrix(Matrix *pmat, int precision)
 {
     if (pmat == NULL)
@@ -835,7 +837,7 @@ void print_matrix(Matrix *pmat, int precision)
 
 ### Testcase #1 Create Matrices
 
-```cpp
+```c
 //Benchmark.c (main function)
 int main()
 {
@@ -875,36 +877,13 @@ int main()
 
 Result: 
 
-```
-2.00    2.00
-2.00    2.00
-
-2.00    0.00
-2.00    2.00
-1.00    0.00
-3.00    2.00
-
-1.00    1.00    4.00
-5.00    1.00    4.00
-
-1.00    1.00    4.00
-5.00    1.00    4.00
-
-1.00    0.00    0.00
-0.00    1.00    0.00
-0.00    0.00    1.00
-
-0.54    0.87    0.51    0.83
-0.26    0.76    0.35    0.47
-0.59    0.98    0.36    0.63
-0.97    0.83    0.16    0.27
-```
+<img src="https://s2.loli.net/2022/10/29/jgWrmOKsMZPNiHv.png" alt="create.png" style="zoom:50%;" />
 
 ### Testcase #2 Matrix - level operations
 
 #### Delete
 
-```cpp
+```c
 //Benchmark.c (main function)
 int main()
 {
@@ -917,18 +896,11 @@ int main()
 
 Result: 
 
-```
-1.2     1.2     1.2
-1.2     1.2     1.2
-1.2     1.2     1.2
-Error: NULL pointer exception
-Error log: The pointer to source matrix is null, print process interrupted.
-Current operation interrupted, please check and try again.
-```
+![delete.png](https://s2.loli.net/2022/10/29/KC4NxfWbXqAr9HY.png)
 
 #### Copy
 
-```cpp
+```c
 //Benchmark.c (main function)
 int main()
 {
@@ -941,9 +913,184 @@ int main()
     set_value(mat,2,2,2);
     printf("copy:\n");
     print_matrix(cpy,1);
-    printf("refernce:\n");
+    printf("reference:\n");
     print_matrix(ref,1);
 }
 ```
 
 Result:
+
+![copy.png](https://s2.loli.net/2022/10/29/UW7Qe1SyVT62hBX.png)
+
+#### Concat
+
+```c
+//Benchmark.c (main function)
+int main()
+{
+    Matrix *mat = create_from_string("1,1,2;3,5,8;13,21,34;55,89,144",4, 3);
+    Matrix *i3=create_identity(3);
+    Matrix *i4=create_identity(4);
+    printf("col_concat:\n");
+    print_matrix(col_concat(mat,i3),0);
+    printf("row_concat:\n");
+    print_matrix(row_concat(i4,mat),0);
+}
+```
+
+Result: 
+
+<img src="https://s2.loli.net/2022/10/29/FNXEbCLoKOWUxgJ.png" alt="concat.png" style="zoom:50%;" />
+
+### Testcase #3 Matrix query
+
+#### Extrema (Create matrix from file)
+
+```c
+//matfile
+1,3,5,7,9;
+2,4,6,8,10;
+9,8,7,6,5;
+4,3,2,1,0;
+1.1,2.2,3.3,4.4,5.5;
+```
+
+```c
+//Benchmark.c (customized compare function & main function)
+bool mycmp(TYPE x,TYPE y)
+{
+    return fabs(x-2.1)<fabs(y-2.1);
+}
+int main()
+{
+    Matrix *mat=create_from_file("matfile",5,5);
+    print_matrix(mat,1);
+    printf("The max value is %.1f\nThe min value is %.1f\n",max(mat),min(mat));
+    printf("The value closest to 2.1 is %.1f\n",extreme_value(mat,mycmp));
+}
+```
+
+Result: 
+
+<img src="https://s2.loli.net/2022/10/30/qmQKaxO95sT14nC.png" alt="extrema.png" style="zoom: 67%;" />
+
+### Testcase #4 Matrix operation (customized)
+
+```c
+//Benchmark.c (main function)
+int main()
+{
+    Matrix *mat=create_from_file("matfile",5,5);
+    printf("origin mat:\n");
+    print_matrix(mat,1);
+    printf("unary operation mat:\n");
+    Matrix *una=unary_calc(mat,cosf);
+    print_matrix(una,2);
+    printf("binary operation mat:\n");
+    Matrix *bin=binary_calc(mat,una,divide);
+    print_matrix(bin,2);
+    printf("scalar operation mat:\n");
+    Matrix *sca=scalar_calc(mat,6,minus);
+    print_matrix(sca,2);
+}
+```
+
+Result: 
+
+<img src="https://s2.loli.net/2022/10/30/eFrIh8cDbTSfOAQ.png" alt="image.png" style="zoom:50%;" />
+
+### Testcase #5 Matrix calculation
+
+#### Simple calculation
+
+```c
+//Benchmark.c (main function)
+int main()
+{
+    srand(time(NULL));
+    Matrix *A=create_random(3,3);
+    printf("A:\n");
+    print_matrix(A,2);
+    Matrix *B=create_random(3,3);
+    printf("B:\n");
+    print_matrix(B,2);
+    multiply_by(&A,B);
+    printf("A=A*B=\n");
+    print_matrix(A,2);
+    printf("A+B=\n");
+    print_matrix(matrix_add(A,B),2);
+    printf("A-B=\n");
+    print_matrix(matrix_subtract(A,B),2);
+}
+```
+
+Result: 
+
+<img src="https://s2.loli.net/2022/10/30/Vi9kB5tTDgGz1w8.png" alt="basic_calc.png" style="zoom:50%;" />
+
+#### Matrix-boost Fibonacci sequence
+
+```c
+//Benchmark.c (main function)
+int main()
+{
+    Matrix *A=create_from_string("1,1;1,0",2,2);
+    Matrix *v=create_from_string("1;1",2,1);
+    for(size_t i=0;i<20;i++)
+    {
+        Matrix *t=matrix_multiply(matrix_pow(A,i),v);
+        printf("fib[%d] = %.0f\n",i,get_value(t,2,1));
+    }
+}
+```
+
+Result: 
+
+<img src="https://s2.loli.net/2022/10/30/z9MgQqcWDFhk2HT.png" alt="fib.png" style="zoom:50%;" />
+
+### Matrix transformation
+
+#### Uptriangular, Determinant and inverse
+
+```c
+//Benchmark.c (main function)
+int main()
+{
+    Matrix *A=create_random(6,6);
+    printf("A:\n");
+    print_matrix(A,2);
+    Matrix *U=Uptriangular(A);
+    printf("U:\n");
+    print_matrix(U,2);
+    Matrix *I=inverse(A);
+    printf("A^-1:\n");
+    print_matrix(I,2);
+    printf("A*(A^-1)=\n");
+    print_matrix(matrix_multiply(A,I),2);
+    printf("|A| = %f\n",determinant(A));
+}
+```
+
+Result: 
+
+<img src="https://s2.loli.net/2022/10/30/rmu34DqKpo7nGB2.png" alt="trans.png" style="zoom:50%;" />
+
+#### Transpose and rank
+
+```c
+//Benchmark.c (main function)
+int main()
+{
+    Matrix *A=create_from_file("matfile",6,6);
+    printf("A:\n");
+    print_matrix(A,0);
+    Matrix *T=transpose(A);
+    printf("T:\n");
+    print_matrix(T,0);
+    printf("The rank of A is: %d\nThe rank of T is: %d\n",rank(A),rank(T));
+}
+```
+
+Result: 
+
+<img src="https://s2.loli.net/2022/10/30/RvWqULAaYg1tJQn.png" alt="image.png" style="zoom:50%;" />

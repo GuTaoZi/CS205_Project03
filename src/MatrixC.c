@@ -257,7 +257,7 @@ Matrix *create_random(size_t row, size_t col)
     }
     for (size_t i = 0; i < size_of(new); i++)
     {
-        new->data[i] = 1.0f * rand() / 0x7fff;
+        new->data[i] = 1.0f * rand() / 0x7fffffff;
     }
     return new;
 }

@@ -1,0 +1,1 @@
+/usr/bin/cc CMakeFiles/matlib.dir/src/Benchmark.c.o CMakeFiles/matlib.dir/src/MatrixC.c.o -o matlib  -lm 
