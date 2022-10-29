@@ -23,19 +23,19 @@ Matrix *create_full(size_t row, size_t col, TYPE value);
 
 Matrix *create_from_array(TYPE *src, size_t row, size_t col);
 
-Matrix *create_from_string(char *src,size_t row,size_t col);
+Matrix *create_from_string(char *src, size_t row, size_t col);
 
-Matrix *create_from_file(char *f_path,size_t row,size_t col);
+Matrix *create_from_file(char *f_path, size_t row, size_t col);
 
 Matrix *create_copy(Matrix *src);
-
-Matrix *sub_matrix(Matrix *src, size_t row_begin, size_t col_begin, size_t row_end, size_t col_end);
 
 Matrix *create_identity(size_t order);
 
 Matrix *create_diagonal(TYPE *src, size_t order);
 
 Matrix *create_random(size_t row, size_t col);
+
+Matrix *sub_matrix(Matrix *src, size_t row_begin, size_t col_begin, size_t row_end, size_t col_end);
 
 //Functions For Matrix Operations
 bool delete_matrix(Matrix **pmat);
@@ -44,13 +44,14 @@ bool reshape_matrix(Matrix *src, size_t row, size_t col);
 
 bool copy_matrix(Matrix *dest, Matrix *src);
 
+bool ref_matrix(Matrix *dest, Matrix *src);
+
 bool swap_matrix(Matrix *first, Matrix *second);
 
 Matrix *col_concat(Matrix *first, Matrix *second);
 
 Matrix *row_concat(Matrix *first, Matrix *second);
 
-//Functions For Modifying Matrices
 bool set_value(Matrix *pmat, size_t row, size_t col, TYPE value);
 
 
@@ -64,6 +65,8 @@ TYPE get_value(Matrix *src, size_t row, size_t col);
 TYPE max(Matrix *src);
 
 TYPE min(Matrix *src);
+
+TYPE extreme_value(Matrix *src, bool (*cmp)(TYPE, TYPE));
 
 bool equal(Matrix *first, Matrix *second);
 
@@ -125,8 +128,6 @@ void print_matrix(Matrix *pmat, int precision);
 void print_error(char *err_type, char *err_info);
 
 void print_warning(char *w_type, char *w_info);
-
-//Safe version.
 
 //File & String Operation
 

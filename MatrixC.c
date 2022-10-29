@@ -164,7 +164,7 @@ Matrix *create_from_file(char *f_path, size_t row, size_t col)
         last = o;
         str[str_len++] = o;
     }
-    while (str[str_len-1]==' '||str[str_len-1]==';')
+    while (str[str_len - 1] == ' ' || str[str_len - 1] == ';')
     {
         str_len--;
     }
@@ -322,6 +322,8 @@ bool copy_matrix(Matrix *dest, Matrix *src)
         {
             return false;
         }
+        print_warning("Copy into null matrix",
+                      "The pointer to destination matrix is null, the pointer will point to a copy matrix of source matrix.");
     }
     else
     {
@@ -338,6 +340,19 @@ bool copy_matrix(Matrix *dest, Matrix *src)
             return false;
         }
     }
+    return true;
+}
+
+bool ref_matrix(Matrix *dest, Matrix *src)
+{
+    if (src == NULL)
+    {
+        print_error("NULL pointer exception",
+                    "The pointer to source matrix is null, copy process interrupted.");
+        return false;
+    }
+    delete_matrix(&dest);
+    dest = src;
     return true;
 }
 
@@ -560,6 +575,25 @@ TYPE min(Matrix *src)
     for (size_t i = 1; i < size_of(src); i++)
     {
         if (ans > src->data[i])
+        {
+            ans = src->data[i];
+        }
+    }
+    return ans;
+}
+
+TYPE extreme_value(Matrix *src, bool (*cmp)(TYPE, TYPE))
+{
+    if (src == NULL)
+    {
+        print_error("NULL pointer exception",
+                    "The pointer to source matrix is null, return NaN.");
+        return nanf("");
+    }
+    TYPE ans = src->data[0];
+    for (size_t i = 1; i < size_of(src); i++)
+    {
+        if (fun(src->data[i], ans))
         {
             ans = src->data[i];
         }
@@ -899,7 +933,22 @@ Matrix *matrix_pow(Matrix *base, size_t power)
     {
         return create_identity(base->row);
     }
-    Matrix *new = create_copy(base);
+    Matrix *new;
+    if (power < 0)
+    {
+        new = create_copy(inverse(base));
+        if (new == NULL)
+        {
+            print_error("NULL pointer exception",
+                        "The source matrix has no inverse, negative power calculation interrupted.");
+            return NULL;
+        }
+        power = -power;
+    }
+    else
+    {
+        new = create_copy(base);
+    }
     Matrix *Base = create_copy(base);
     power--;
     while (power)
@@ -1217,7 +1266,6 @@ void print_warning(char *w_type, char *w_info)
     printf("Warning: %s\n", w_type);
     printf("Details: %s\n", w_info);
 }
-//Safe version.
 
 //File & String Operation
 
@@ -1232,16 +1280,16 @@ bool regex(char *str, size_t len)
     {
         return false;
     }
-    bool dot_pos = false;
+    bool dot = false;
     while (it < len)
     {
         if (str[it] == '.')
         {
-            if (dot_pos)
+            if (dot)
             {
                 return false;
             }
-            dot_pos = true;
+            dot = true;
         }
         else if (!isdigit(str[it]))
         {
