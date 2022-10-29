@@ -257,7 +257,7 @@ Matrix *create_random(size_t row, size_t col)
     }
     for (size_t i = 0; i < size_of(new); i++)
     {
-        new->data[i] = 1.0f * rand() / RAND_MAX;
+        new->data[i] = 1.0f * rand() / 0x7fff;
     }
     return new;
 }
@@ -307,7 +307,7 @@ bool reshape_matrix(Matrix *src, size_t row, size_t col)
     return true;
 }
 
-bool copy_matrix(Matrix *dest, Matrix *src)
+bool copy_matrix(Matrix **dest, Matrix *src)
 {
     if (src == NULL)
     {
@@ -315,10 +315,10 @@ bool copy_matrix(Matrix *dest, Matrix *src)
                     "The pointer to source matrix is null, copy process interrupted.");
         return false;
     }
-    if (dest == NULL)
+    if (*dest == NULL)
     {
-        dest = create_copy(src);
-        if (dest == NULL)
+        *dest = create_copy(src);
+        if (*dest == NULL)
         {
             return false;
         }
@@ -327,15 +327,14 @@ bool copy_matrix(Matrix *dest, Matrix *src)
     }
     else
     {
-        if ((dest->row != src->row) || (dest->col != src->col))
+        if (((*dest)->row != src->row) || ((*dest)->col != src->col))
         {
             print_warning("Copy into matrix of different sizes",
                           "The sizes of two matrices are different, the data of destination matrix will be covered by source matrix.");
         }
-        free(dest->data);
-        free(dest);
-        dest = create_copy(src);
-        if (dest == NULL)
+        delete_matrix(dest);
+        *dest = create_copy(src);
+        if (*dest == NULL)
         {
             return false;
         }
@@ -343,7 +342,7 @@ bool copy_matrix(Matrix *dest, Matrix *src)
     return true;
 }
 
-bool ref_matrix(Matrix *dest, Matrix *src)
+bool ref_matrix(Matrix **dest, Matrix *src)
 {
     if (src == NULL)
     {
@@ -351,8 +350,11 @@ bool ref_matrix(Matrix *dest, Matrix *src)
                     "The pointer to source matrix is null, copy process interrupted.");
         return false;
     }
-    delete_matrix(&dest);
-    dest = src;
+    if(*dest!=NULL)
+    {
+        delete_matrix(dest);
+    }
+    *dest = src;
     return true;
 }
 
@@ -593,7 +595,7 @@ TYPE extreme_value(Matrix *src, bool (*cmp)(TYPE, TYPE))
     TYPE ans = src->data[0];
     for (size_t i = 1; i < size_of(src); i++)
     {
-        if (fun(src->data[i], ans))
+        if (cmp(src->data[i], ans))
         {
             ans = src->data[i];
         }

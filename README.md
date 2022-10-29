@@ -1,3 +1,5 @@
+- $\LaTeX$ of README.md may fail to display on github. For better experience, pls check [report in pdf format.](https://github.com/GuTaoZi/CS205_Project03/blob/master/report.pdf)
+
 # CS205 C/ C++ Programming Project03 
 
 # A Library for Matrix Operations in C
@@ -195,7 +197,7 @@ bool delete_matrix(Matrix **pmat)
 ### 复制矩阵
 
 ```cpp
-bool copy_matrix(Matrix *dest, Matrix *src)
+bool copy_matrix(Matrix **dest, Matrix *src)
 {
     if (src == NULL)
     {
@@ -203,10 +205,10 @@ bool copy_matrix(Matrix *dest, Matrix *src)
                     "The pointer to source matrix is null, copy process interrupted.");
         return false;
     }
-    if (dest == NULL)
+    if (*dest == NULL)
     {
-        dest = create_copy(src);
-        if (dest == NULL)
+        *dest = create_copy(src);
+        if (*dest == NULL)
         {
             return false;
         }
@@ -215,15 +217,14 @@ bool copy_matrix(Matrix *dest, Matrix *src)
     }
     else
     {
-        if ((dest->row != src->row) || (dest->col != src->col))
+        if (((*dest)->row != src->row) || ((*dest)->col != src->col))
         {
             print_warning("Copy into matrix of different sizes",
                           "The sizes of two matrices are different, the data of destination matrix will be covered by source matrix.");
         }
-        free(dest->data);
-        free(dest);
-        dest = create_copy(src);
-        if (dest == NULL)
+        delete_matrix(dest);
+        *dest = create_copy(src);
+        if (*dest == NULL)
         {
             return false;
         }
@@ -231,7 +232,7 @@ bool copy_matrix(Matrix *dest, Matrix *src)
     return true;
 }
 
-bool ref_matrix(Matrix *dest, Matrix *src)
+bool ref_matrix(Matrix **dest, Matrix *src)
 {
     if (src == NULL)
     {
@@ -239,8 +240,11 @@ bool ref_matrix(Matrix *dest, Matrix *src)
                     "The pointer to source matrix is null, copy process interrupted.");
         return false;
     }
-    delete_matrix(&dest);
-    dest = src;
+    if(*dest!=NULL)
+    {
+        delete_matrix(dest);
+    }
+    *dest = src;
     return true;
 }
 ```
@@ -294,6 +298,8 @@ Matrix *row_concat(Matrix *first, Matrix *second)
 
 拼接原理即按行赋值，左边`first`，右边`second`。容易忽视的漏洞是拼接前两个大小合适的矩阵可能在拼接后超限，此时不应对空指针`new`进行赋值，而应报错。
 
+---
+
 ### 查询操作
 
 ```cpp
@@ -331,7 +337,7 @@ TYPE extreme_value(Matrix *src, bool (*cmp)(TYPE, TYPE))
     TYPE ans = src->data[0];
     for (size_t i = 1; i < size_of(src); i++)
     {
-        if (fun(src->data[i], ans))
+        if (cmp(src->data[i], ans))
         {
             ans = src->data[i];
         }
@@ -409,7 +415,9 @@ Matrix *binary_calc(Matrix *first, Matrix *second, TYPE (*fun)(TYPE, TYPE))
 
 也因此，题目要求的四种标量运算只用向`scalar_calc`传入`plus`, `minus`, `mul`, `divide`四个自定义函数即可。
 
-### 矩阵运算
+---
+
+### 矩阵计算
 
 ```cpp
 //Functions For Matrix Calculation
@@ -540,6 +548,8 @@ Matrix *matrix_pow(Matrix *base, size_t power)
 若矩阵为方阵，则其0次幂为单位阵；
 
 若矩阵为方阵且可逆，则其负数次幂为其逆的对应正数次幂。
+
+---
 
 ### 矩阵变换
 
@@ -765,6 +775,8 @@ Matrix *inverse(Matrix *pmat)
 6. 利用`sub_matrix`函数截取起初拼合在右侧的单位矩阵，此时经过行变换已经变成了矩阵的逆
 7. 返回结果
 
+---
+
 ### 报错与警告
 
 ```cpp
@@ -818,3 +830,120 @@ void print_matrix(Matrix *pmat, int precision)
 不过就算把`precision`设置为114514，囿于`float`型的精度也只能精确到6位以内，因此程序在接收到高于6的精度要求后会抛个警告并坚持设置精度为6。
 
 输出的部分也是朴素安全，在调试时笔者注意到一个细节：有时候会输出`-0.0`这样的数据，看上去很怪，这是因为没有显示完全一个很接近0的负数，所以采用了`float_equal`进行处理，顺便把原矩阵的值也修改为常规的`0.0f`。
+
+## Part 3 - Result & Verification
+
+### Testcase #1 Create Matrices
+
+```cpp
+//Benchmark.c (main function)
+int main()
+{
+    Matrix *mat = create_full(2, 2, 2);
+    print_matrix(mat, 2);
+    putchar('\n');
+    delete_matrix(&mat);
+
+    TYPE arr[] = {2, 0, 2, 2, 1, 0, 3, 2};
+    mat = create_from_array(arr, 4, 2);
+    print_matrix(mat, 2);
+    putchar('\n');
+    delete_matrix(&mat);
+
+    mat = create_from_string("1,1,4;5,1,4", 2, 3);
+    print_matrix(mat, 2);
+    putchar('\n');
+    delete_matrix(&mat);
+
+    Matrix *mat2 = create_copy(mat);
+    delete_matrix(&mat);
+    print_matrix(mat2, 2);
+    putchar('\n');
+    delete_matrix(&mat2);
+
+    mat = create_identity(3);
+    print_matrix(mat, 2);
+    putchar('\n');
+    delete_matrix(&mat);
+
+    mat= create_random(4,4);
+    print_matrix(mat, 2);
+    putchar('\n');
+    delete_matrix(&mat);
+}
+```
+
+Result: 
+
+```
+2.00    2.00
+2.00    2.00
+
+2.00    0.00
+2.00    2.00
+1.00    0.00
+3.00    2.00
+
+1.00    1.00    4.00
+5.00    1.00    4.00
+
+1.00    1.00    4.00
+5.00    1.00    4.00
+
+1.00    0.00    0.00
+0.00    1.00    0.00
+0.00    0.00    1.00
+
+0.54    0.87    0.51    0.83
+0.26    0.76    0.35    0.47
+0.59    0.98    0.36    0.63
+0.97    0.83    0.16    0.27
+```
+
+### Testcase #2 Matrix - level operations
+
+#### Delete
+
+```cpp
+//Benchmark.c (main function)
+int main()
+{
+    Matrix *mat = create_full(3, 3, 1.2);
+    print_matrix(mat, 1);
+    delete_matrix(&mat);
+    print_matrix(mat, 1);
+}
+```
+
+Result: 
+
+```
+1.2     1.2     1.2
+1.2     1.2     1.2
+1.2     1.2     1.2
+Error: NULL pointer exception
+Error log: The pointer to source matrix is null, print process interrupted.
+Current operation interrupted, please check and try again.
+```
+
+#### Copy
+
+```cpp
+//Benchmark.c (main function)
+int main()
+{
+    TYPE arr[] = {0.1, -0.2, 0.3, -0.4};
+    Matrix *mat = create_from_array(arr, 2, 2);
+    Matrix *cpy=NULL;
+    Matrix *ref=NULL;
+    copy_matrix(&cpy,mat);
+    ref_matrix(&ref,mat);
+    set_value(mat,2,2,2);
+    printf("copy:\n");
+    print_matrix(cpy,1);
+    printf("refernce:\n");
+    print_matrix(ref,1);
+}
+```
+
+Result:

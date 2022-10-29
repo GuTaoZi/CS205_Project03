@@ -42,9 +42,9 @@ bool delete_matrix(Matrix **pmat);
 
 bool reshape_matrix(Matrix *src, size_t row, size_t col);
 
-bool copy_matrix(Matrix *dest, Matrix *src);
+bool copy_matrix(Matrix **dest, Matrix *src);
 
-bool ref_matrix(Matrix *dest, Matrix *src);
+bool ref_matrix(Matrix **dest, Matrix *src);
 
 bool swap_matrix(Matrix *first, Matrix *second);
 
