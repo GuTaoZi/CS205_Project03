@@ -6,7 +6,7 @@
 #include <ctype.h>
 
 #define TYPE float
-#define float_equal(x, y) ((x-y)<1e-5&&(y-x)<1e-5)
+#define float_equal(x, y) ((x - y) < 1e-5 && (y - x) < 1e-5)
 #define MATRIX_MAX_CAPACITY 100000000
 
 typedef struct MatrixC
@@ -16,7 +16,7 @@ typedef struct MatrixC
     TYPE *data;
 } Matrix;
 
-//Functions For Creating Matrices
+// Functions For Creating Matrices
 Matrix *create_empty(size_t row, size_t col);
 
 Matrix *create_full(size_t row, size_t col, TYPE value);
@@ -37,7 +37,7 @@ Matrix *create_random(size_t row, size_t col);
 
 Matrix *sub_matrix(Matrix *src, size_t row_begin, size_t col_begin, size_t row_end, size_t col_end);
 
-//Functions For Matrix Operations
+// Functions For Matrix Operations
 bool delete_matrix(Matrix **pmat);
 
 bool reshape_matrix(Matrix *src, size_t row, size_t col);
@@ -54,8 +54,7 @@ Matrix *row_concat(Matrix *first, Matrix *second);
 
 bool set_value(Matrix *pmat, size_t row, size_t col, TYPE value);
 
-
-//Functions For Querying In Matrices
+// Functions For Querying In Matrices
 size_t size_of(Matrix *pmat);
 
 size_t rank(Matrix *pmat);
@@ -70,7 +69,7 @@ TYPE extreme_value(Matrix *src, bool (*cmp)(TYPE, TYPE));
 
 bool equal(Matrix *first, Matrix *second);
 
-//Functions For Customized Calculation
+// Functions For Customized Calculation
 
 TYPE plus(TYPE first, TYPE second);
 
@@ -80,13 +79,13 @@ TYPE mul(TYPE first, TYPE second);
 
 TYPE divide(TYPE first, TYPE second);
 
-//Functions For Matrix Calculation
+// Functions For Matrix Calculation
 
-Matrix *unary_calc(Matrix *pmat, TYPE(*fun)(TYPE));
+Matrix *unary_calc(Matrix *pmat, TYPE (*fun)(TYPE));
 
 Matrix *binary_calc(Matrix *first, Matrix *second, TYPE (*fun)(TYPE, TYPE));
 
-Matrix *scalar_calc(Matrix *pmat, TYPE scalar, TYPE(*fun)(TYPE, TYPE));
+Matrix *scalar_calc(Matrix *pmat, TYPE scalar, TYPE (*fun)(TYPE, TYPE));
 
 bool add_by(Matrix **augend, Matrix *addend);
 
@@ -112,7 +111,7 @@ bool multiply_scalar(Matrix *pmat, TYPE scalar);
 
 bool divide_scalar(Matrix *pmat, TYPE scalar);
 
-//Functions For Matrix Transformations
+// Functions For Matrix Transformations
 
 TYPE determinant(Matrix *pmat);
 
@@ -122,18 +121,19 @@ Matrix *transpose(Matrix *pmat);
 
 Matrix *Uptriangular(Matrix *pmat);
 
-//Functions For Debugging, Error & Warning
+// Functions For Debugging, Error & Warning
 void print_matrix(Matrix *pmat, int precision);
+
+bool print_matrix_to_file(char *filename, Matrix *pmat, int precision);
 
 void print_error(char *err_type, char *err_info);
 
 void print_warning(char *w_type, char *w_info);
 
-//File & String Operation
+// File & String Operation
 
 bool regex(char *str, size_t len);
 
 TYPE to_float(char *str, size_t len);
-
 
 #endif

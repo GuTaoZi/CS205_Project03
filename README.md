@@ -47,7 +47,7 @@
 
 ### 项目结构
 
-项目
+
 
 ## Part 2 - Code
 
@@ -838,6 +838,53 @@ void print_matrix(Matrix *pmat, int precision)
 
 输出的部分也是朴素安全，在调试时笔者注意到一个细节：有时候会输出`-0.0`这样的数据，看上去很怪，这是因为没有显示完全一个很接近0的负数，所以采用了`float_equal`进行处理，顺便把原矩阵的值也修改为常规的`0.0f`。
 
+### 输出矩阵到文件
+
+```c
+bool print_matrix_to_file(char *filename, Matrix *pmat, int precision)
+{
+    FILE *file = fopen(filename, "w");
+    if (file == NULL)
+    {
+        print_error("NULL pointer exception",
+                    "The output file is not found, print to file process interrupted.");
+        return false;
+    }
+    if (pmat == NULL)
+    {
+        print_error("NULL pointer exception",
+                    "The pointer to source matrix is null, print to file process interrupted.");
+        return false;
+    }
+    if (precision < 0)
+    {
+        print_error("Illegal precision", "Precision should be non-negative, print to file process interrupted.");
+        return;
+    }
+    if (precision > 6)
+    {
+        print_warning("Precision too large", "Float numbers are accurate to at most the 6th decimal place.");
+        precision = 6;
+    }
+    for (size_t i = 0; i < pmat->row; i++)
+    {
+        for (size_t j = 0; j < pmat->col; j++)
+        {
+            if (float_equal(pmat->data[i * pmat->col + j], 0.0f))
+            {
+                pmat->data[i * pmat->col + j] = 0.0f;
+            }
+            fprintf(file, "%.*f\t", precision, pmat->data[i * pmat->col + j]);
+        }
+        fprintf(file, "\n");
+    }
+    fclose(file);
+    return true;
+}
+```
+
+对于规模较大的矩阵，用户会有将结果输出到指定文件的需求，本项目也进行了实现
+
 ## Part 3 - Result & Verification
 
 ### Testcase #1 创建矩阵
@@ -1273,3 +1320,41 @@ Result:
 ![robust_trans.png](https://s2.loli.net/2022/10/30/hdIanKWlCuwJDom.png)
 
 ## Part 4 - Difficulties & Solutions
+
+### 1. 安全、报错与警告
+
+**需求**：由于项目需要实现一个安全的库，不至于用户正常操作导致崩溃，因此对于可能的危险操作要进行检查、报错和处理。
+
+**解决方案**：
+
+​		标准库中，一个函数有时会有对应的`safe`版本，以效率作为代价提高安全性。本项目根据情景需求，将所有函数按`safe`标准编写，对于每个函数都内置内存管理、指针操作等细节，用户直接调用函数即可。
+
+​		由于C并不能便捷地通过`throw catch`来捕获错误，本项目中在每个函数中，在进行函数操作前都使用判断语句检查安全性，若有错误则及时返回并报错/警告，报错/警告通过综合的函数实现。同时，丰富的函数接口覆盖了用户对于矩阵操作的需求，可以便利地使用，避免了用户直接对矩阵进行内存管理而可能导致的高危隐患。
+
+### 2. 移植性与拓展性
+
+**需求**：理工科在不同操作系统进行矩阵运算的情境下，经常需要对整个矩阵进行一元/二元的各种类型的运算，如果按照传统的方式，对于每一种运算都实现一个函数，则会导致库的冗余重复，调用时也很麻烦。
+
+**解决方案**：
+
+​		可移植方面，本项目依据标准库模式使用`size_t`类型记录下标，既避免了负下标可能导致的段错误，也保证了不同位数操作系统下的一致性。
+
+​		数据类型方面，囿于C语言的限制，本项目以宏丐版代替模板，模拟了类模板的效果，更改`TYPE`后只需要简单修改细节即可适用于不同类型的数据。
+
+​		矩阵运算方面，本项目实现支持自定义运算的矩阵运算函数，对于用户自定义的任意一元/二元运算，只需要将运算的函数指针作为参数传入库内的函数，则可以对矩阵逐元素进行自定义运算，扩展性良好~~，不能重载运算符的确让人挺难受的~~。
+
+### 3. 复杂函数的实现
+
+**需求**：求行列式，求秩，求逆这三个问题与上三角化均有绑定关系，但上三角化的实现较为复杂。
+
+**解决方案**：回去翻了线性代数教材，手动模拟了几次$Gauss\ Jordan\ Elimination$，然后将模拟的过程在2h的debug后码出来了，前三个问题也迎刃而解，实现这个之后，矩阵的若干种其他分解要实现也很轻松了。
+
+## Part 5 - Summary
+
+​		感谢您能读到这里，报告为了尽力展示项目全貌略显冗长，下次改正，感谢理解（磕头
+
+​		和前两次project不同，这次笔者先没有直接开写，而是首先观摩了[GitHub上Amoiensis的Matrix_hub项目](https://github.com/Amoiensis/Matrix_hub)，了解了矩阵运算常用的需求，对照题目构思了可能可以实现的功能以及相比他的项目我可以做出的改进。也因此，在项目的实现中并非想到一个函数就写一个，加入了很多扩展性的内容。
+
+​		本次project对于安全性的要求较高，笔者也因此再次加强了对程序鲁棒性的要求，在没有`try catch`的帮助下进行`error handling`确实是个技术活，在编写过程中也有参考大家讨论中提出的异常情况来进行优化。
+
+​		感觉这次project的主要难点在要自己给自己出难题(实际上这学期的project都有这个成分在的)，对于加深C的理解还是很有帮助的，不过对于初学者来说可能是个不小的挑战吧(笑)。

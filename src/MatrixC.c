@@ -5,7 +5,7 @@
 #include <string.h>
 #include "MatrixC.h"
 
-//Functions For Creating Matrices
+// Functions For Creating Matrices
 inline Matrix *create_empty(size_t row, size_t col)
 {
     if (row * col == 0)
@@ -170,6 +170,7 @@ Matrix *create_from_file(char *f_path, size_t row, size_t col)
         str_len--;
     }
     str[str_len] = '\0';
+    fclose(file);
     return create_from_string(str, row, col);
 }
 
@@ -263,7 +264,7 @@ Matrix *create_random(size_t row, size_t col)
     return new;
 }
 
-//Functions For Matrix Operations
+// Functions For Matrix Operations
 bool delete_matrix(Matrix **pmat)
 {
     if (pmat == NULL)
@@ -351,7 +352,7 @@ bool ref_matrix(Matrix **dest, Matrix *src)
                     "The pointer to source matrix is null, copy process interrupted.");
         return false;
     }
-    if(*dest!=NULL)
+    if (*dest != NULL)
     {
         delete_matrix(dest);
     }
@@ -442,7 +443,7 @@ Matrix *row_concat(Matrix *first, Matrix *second)
     return new;
 }
 
-//Functions For Modifying Matrices
+// Functions For Modifying Matrices
 bool set_value(Matrix *pmat, size_t row, size_t col, TYPE value)
 {
     if (pmat == NULL)
@@ -465,7 +466,7 @@ bool set_value(Matrix *pmat, size_t row, size_t col, TYPE value)
     return true;
 }
 
-//Functions For Querying In Matrices
+// Functions For Querying In Matrices
 size_t size_of(Matrix *pmat)
 {
     if (pmat == NULL)
@@ -625,7 +626,7 @@ bool equal(Matrix *first, Matrix *second)
     return true;
 }
 
-//Functions For Customized Calculation
+// Functions For Customized Calculation
 
 TYPE plus(TYPE first, TYPE second)
 {
@@ -647,9 +648,9 @@ TYPE divide(TYPE first, TYPE second)
     return (first / second);
 }
 
-//Functions For Matrix Calculation
+// Functions For Matrix Calculation
 
-Matrix *unary_calc(Matrix *pmat, TYPE(*fun)(TYPE))
+Matrix *unary_calc(Matrix *pmat, TYPE (*fun)(TYPE))
 {
     if (pmat == NULL)
     {
@@ -1014,7 +1015,7 @@ bool divide_scalar(Matrix *pmat, TYPE scalar)
     return true;
 }
 
-//Functions For Matrix Transformations
+// Functions For Matrix Transformations
 
 TYPE determinant(Matrix *pmat)
 {
@@ -1160,7 +1161,7 @@ Matrix *transpose(Matrix *pmat)
     {
         for (size_t j = 0; j < pmat->col; j++)
         {
-            *(new->data + j * new->col + i) = *(pmat->data + i * pmat->col + j);
+            *(new->data + j *new->col + i) = *(pmat->data + i * pmat->col + j);
         }
     }
     return new;
@@ -1225,7 +1226,7 @@ Matrix *Uptriangular(Matrix *pmat)
     return res;
 }
 
-//Functions For Debugging
+// Functions For Debugging
 void print_matrix(Matrix *pmat, int precision)
 {
     if (pmat == NULL)
@@ -1257,6 +1258,47 @@ void print_matrix(Matrix *pmat, int precision)
     }
 }
 
+bool print_matrix_to_file(char *filename, Matrix *pmat, int precision)
+{
+    FILE *file = fopen(filename, "w");
+    if (file == NULL)
+    {
+        print_error("NULL pointer exception",
+                    "The output file is not found, print to file process interrupted.");
+        return false;
+    }
+    if (pmat == NULL)
+    {
+        print_error("NULL pointer exception",
+                    "The pointer to source matrix is null, print to file process interrupted.");
+        return false;
+    }
+    if (precision < 0)
+    {
+        print_error("Illegal precision", "Precision should be non-negative, print to file process interrupted.");
+        return;
+    }
+    if (precision > 6)
+    {
+        print_warning("Precision too large", "Float numbers are accurate to at most the 6th decimal place.");
+        precision = 6;
+    }
+    for (size_t i = 0; i < pmat->row; i++)
+    {
+        for (size_t j = 0; j < pmat->col; j++)
+        {
+            if (float_equal(pmat->data[i * pmat->col + j], 0.0f))
+            {
+                pmat->data[i * pmat->col + j] = 0.0f;
+            }
+            fprintf(file, "%.*f\t", precision, pmat->data[i * pmat->col + j]);
+        }
+        fprintf(file, "\n");
+    }
+    fclose(file);
+    return true;
+}
+
 void print_error(char *err_type, char *err_info)
 {
     printf("Error: %s\n", err_type);
@@ -1270,7 +1312,7 @@ void print_warning(char *w_type, char *w_info)
     printf("Details: %s\n", w_info);
 }
 
-//File & String Operation
+// File & String Operation
 
 bool regex(char *str, size_t len)
 {
