@@ -88,11 +88,11 @@ Matrix *binary_calc(Matrix *first, Matrix *second, TYPE (*fun)(TYPE, TYPE));
 
 Matrix *scalar_calc(Matrix *pmat, TYPE scalar, TYPE(*fun)(TYPE, TYPE));
 
-bool add_by(Matrix *augend, Matrix *addend);
+bool add_by(Matrix **augend, Matrix *addend);
 
 Matrix *matrix_add(Matrix *augend, Matrix *addend);
 
-bool subtract_by(Matrix *minuend, Matrix *subtrahend);
+bool subtract_by(Matrix **minuend, Matrix *subtrahend);
 
 Matrix *matrix_subtract(Matrix *minuend, Matrix *subtrahend);
 
@@ -102,7 +102,7 @@ bool multiply_to(Matrix *multiplicand, Matrix **multiplier);
 
 Matrix *matrix_multiply(Matrix *multiplicand, Matrix *multiplier);
 
-Matrix *matrix_pow(Matrix *base, size_t power);
+Matrix *matrix_pow(Matrix *base, int power);
 
 bool add_scalar(Matrix *pmat, TYPE scalar);
 

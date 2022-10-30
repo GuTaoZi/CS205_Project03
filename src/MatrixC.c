@@ -49,6 +49,7 @@ Matrix *create_from_array(TYPE *src, size_t row, size_t col)
     if (src == NULL)
     {
         print_error("NULL pointer exception", "The source array is null, creating process interrupted.");
+        return NULL;
     }
     for (size_t i = 0; i < row * col; i++)
     {
@@ -705,29 +706,29 @@ Matrix *scalar_calc(Matrix *pmat, TYPE scalar, TYPE (*fun)(TYPE, TYPE))
     return new;
 }
 
-bool add_by(Matrix *augend, Matrix *addend)
+bool add_by(Matrix **augend, Matrix *addend)
 {
     if (addend == NULL)
     {
         print_error("NULL pointer exception", "The pointer to addend matrix is null, add process interrupted.");
         return false;
     }
-    if (augend == NULL)
+    if ((*augend) == NULL)
     {
         print_warning("NULL pointer warning",
                       "The pointer to augend matrix is null, a copy of addend matrix will be assigned to augend matrix instead.");
-        augend = create_copy(addend);
+        (*augend) = create_copy(addend);
         return true;
     }
-    if (augend->row != addend->row || augend->col != addend->col)
+    if ((*augend)->row != addend->row || (*augend)->col != addend->col)
     {
         print_error("Illegal matrix shape",
                     "The shape of augend and addend matrices are different, add process interrupted.");
         return false;
     }
-    for (size_t i = 0; i < size_of(augend); i++)
+    for (size_t i = 0; i < size_of((*augend)); i++)
     {
-        augend->data[i] += addend->data[i];
+        (*augend)->data[i] += addend->data[i];
     }
     return true;
 }
@@ -759,33 +760,33 @@ Matrix *matrix_add(Matrix *augend, Matrix *addend)
     return new;
 }
 
-bool subtract_by(Matrix *minuend, Matrix *subtrahend)
+bool subtract_by(Matrix **minuend, Matrix *subtrahend)
 {
     if (subtrahend == NULL)
     {
         print_error("NULL pointer warning", "The pointer to subtrahend matrix is null, subtract process interrupted.");
         return false;
     }
-    if (minuend == NULL)
+    if ((*minuend) == NULL)
     {
         print_warning("NULL pointer warning",
                       "The pointer to minuend matrix is null, a negative copy of subtrahend matrix will be assigned to minuend matrix instead.");
-        minuend = create_copy(subtrahend);
-        for (size_t i = 0; i < size_of(minuend); i++)
+        (*minuend) = create_copy(subtrahend);
+        for (size_t i = 0; i < size_of((*minuend)); i++)
         {
-            minuend->data[i] = -minuend->data[i];
+            (*minuend)->data[i] = -(*minuend)->data[i];
         }
         return true;
     }
-    if (minuend->row != subtrahend->row || minuend->col != subtrahend->col)
+    if ((*minuend)->row != subtrahend->row || (*minuend)->col != subtrahend->col)
     {
         print_error("Illegal matrix shape",
                     "The shape of minuend and subtrahend matrices are different, add process interrupted.");
         return false;
     }
-    for (size_t i = 0; i < size_of(minuend); i++)
+    for (size_t i = 0; i < size_of((*minuend)); i++)
     {
-        minuend->data[i] -= subtrahend->data[i];
+        (*minuend)->data[i] -= subtrahend->data[i];
     }
     return true;
 }
@@ -915,7 +916,7 @@ Matrix *matrix_multiply(Matrix *multiplicand, Matrix *multiplier)
     return new;
 }
 
-Matrix *matrix_pow(Matrix *base, size_t power)
+Matrix *matrix_pow(Matrix *base, int power)
 {
     if (base == NULL)
     {

@@ -44,6 +44,11 @@
 
 - 项目对安全性要求>计算效率，因此尽可能使用浅显稳定的算法，细节处有对效率的提升。
 
+
+### 项目结构
+
+项目
+
 ## Part 2 - Code
 
 ### 宏与结构体
@@ -437,7 +442,7 @@ bool multiply_to(Matrix *multiplicand, Matrix **multiplier);
 
 Matrix *matrix_multiply(Matrix *multiplicand, Matrix *multiplier);
 
-Matrix *matrix_pow(Matrix *base, size_t power);
+Matrix *matrix_pow(Matrix *base, int power);
 
 bool add_scalar(Matrix *pmat, TYPE scalar);
 
@@ -494,7 +499,7 @@ Matrix *matrix_multiply(Matrix *multiplicand, Matrix *multiplier)
 喜闻乐见的快速幂环节，具体原理为将指数二进制表示后，通过倍乘`base`矩阵将乘法次数优化到`log(power)`次，对于$O(n^3)$的矩阵乘法而言优化力度较为客观，代码如下：
 
 ```c
-Matrix *matrix_pow(Matrix *base, size_t power)
+Matrix *matrix_pow(Matrix *base, int power)
 {
     if (base == NULL)
     {
@@ -835,7 +840,7 @@ void print_matrix(Matrix *pmat, int precision)
 
 ## Part 3 - Result & Verification
 
-### Testcase #1 Create Matrices
+### Testcase #1 创建矩阵
 
 ```c
 //Benchmark.c (main function)
@@ -879,9 +884,11 @@ Result:
 
 <img src="https://s2.loli.net/2022/10/29/jgWrmOKsMZPNiHv.png" alt="create.png" style="zoom:50%;" />
 
-### Testcase #2 Matrix - level operations
+---
 
-#### Delete
+### Testcase #2 矩阵级别操作
+
+#### 删除
 
 ```c
 //Benchmark.c (main function)
@@ -898,7 +905,7 @@ Result:
 
 ![delete.png](https://s2.loli.net/2022/10/29/KC4NxfWbXqAr9HY.png)
 
-#### Copy
+#### 复制
 
 ```c
 //Benchmark.c (main function)
@@ -922,7 +929,7 @@ Result:
 
 ![copy.png](https://s2.loli.net/2022/10/29/UW7Qe1SyVT62hBX.png)
 
-#### Concat
+#### 拼接
 
 ```c
 //Benchmark.c (main function)
@@ -942,9 +949,11 @@ Result:
 
 <img src="https://s2.loli.net/2022/10/29/FNXEbCLoKOWUxgJ.png" alt="concat.png" style="zoom:50%;" />
 
-### Testcase #3 Matrix query
+---
 
-#### Extrema (Create matrix from file)
+### Testcase #3 矩阵查询
+
+#### 自定义最值(从文件中读取)
 
 ```c
 //matfile
@@ -974,7 +983,9 @@ Result:
 
 <img src="https://s2.loli.net/2022/10/30/qmQKaxO95sT14nC.png" alt="extrema.png" style="zoom: 67%;" />
 
-### Testcase #4 Matrix operation (customized)
+---
+
+### Testcase #4 自定义矩阵运算
 
 ```c
 //Benchmark.c (main function)
@@ -999,9 +1010,11 @@ Result:
 
 <img src="https://s2.loli.net/2022/10/30/eFrIh8cDbTSfOAQ.png" alt="image.png" style="zoom:50%;" />
 
-### Testcase #5 Matrix calculation
+---
 
-#### Simple calculation
+### Testcase #5 矩阵计算
+
+#### 简单运算
 
 ```c
 //Benchmark.c (main function)
@@ -1028,7 +1041,7 @@ Result:
 
 <img src="https://s2.loli.net/2022/10/30/Vi9kB5tTDgGz1w8.png" alt="basic_calc.png" style="zoom:50%;" />
 
-#### Matrix-boost Fibonacci sequence
+#### 矩阵加速斐波那契数列
 
 ```c
 //Benchmark.c (main function)
@@ -1048,9 +1061,11 @@ Result:
 
 <img src="https://s2.loli.net/2022/10/30/z9MgQqcWDFhk2HT.png" alt="fib.png" style="zoom:50%;" />
 
-### Matrix transformation
+---
 
-#### Uptriangular, Determinant and inverse
+### Testcase #6 矩阵变换
+
+#### 上三角化，行列式，逆
 
 ```c
 //Benchmark.c (main function)
@@ -1075,7 +1090,36 @@ Result:
 
 <img src="https://s2.loli.net/2022/10/30/rmu34DqKpo7nGB2.png" alt="trans.png" style="zoom:50%;" />
 
-#### Transpose and rank
+#### 不满秩矩阵
+
+```c
+//matfile
+1,0,1,0,1,0
+0,2,0,2,0,2
+3,0,3,0,3,0
+0,4,0,4,0,4
+5,0,5,0,5,0
+0,6,0,6,0,6
+```
+
+```c
+//Benchmark.c (main function)
+int main()
+{
+    Matrix *not_full_rank_mat=create_from_file("matfile",6,6);
+    printf("Not full rank matrix:\n");
+    print_matrix(not_full_rank_mat,2);
+    printf("inverse:\n");
+    print_matrix(inverse(not_full_rank_mat),2);
+    printf("determinant: %.0f\n",determinant(not_full_rank_mat));
+}
+```
+
+Result: 
+
+<img src="https://s2.loli.net/2022/10/30/OBfg7usEH9AVkNi.png" alt="image.png" style="zoom:50%;" />
+
+#### 转置与秩
 
 ```c
 //Benchmark.c (main function)
@@ -1094,3 +1138,138 @@ int main()
 Result: 
 
 <img src="https://s2.loli.net/2022/10/30/RvWqULAaYg1tJQn.png" alt="image.png" style="zoom:50%;" />
+
+---
+
+### Testcase #7 鲁棒性测试
+
+#### 创建矩阵
+
+```c
+//Benchmark.c (main function)
+int main()
+{
+    //申请不合法空间
+    Matrix *too_large=create_empty(10000,10001);
+    Matrix *too_small=create_empty(0,100);
+    //空数组作为数据源
+    TYPE *arr=NULL;
+    Matrix *null_src=create_from_array(arr,5,5);
+    //试图拷贝null数组
+    Matrix *copy_null=create_copy(NULL);
+    //错误格式的字符串作为数据源
+    Matrix *wrong_str=create_from_string("1,2,3;4,5;",3,2);
+    //不存在的文件作为数据源
+    Matrix *file_404=create_from_file("file.404",3,3);
+    //截取超出原矩阵的子矩阵
+    Matrix *ori=create_full(2,2,2);
+    Matrix *sub=sub_matrix(ori,1,1,3,3);
+}
+```
+
+Result: 
+
+<img src="https://s2.loli.net/2022/10/30/xsZzMyaATJX7BUF.png" alt="robust_create.png" style="zoom:50%;" />
+
+(*每个函数都内置了空指针报错，后续不作重复展示)
+
+#### 矩阵级别操作
+
+```c
+// Benchmark.c (main function)
+int main()
+{
+    //二次删除
+    Matrix *A = create_full(2, 2, 2);
+    Matrix *B = create_full(3, 3, 3);
+    Matrix *C = create_full(5, 5, 5);
+    delete_matrix(&A);
+    delete_matrix(&A);
+    // null作为源的拷贝
+    copy_matrix(&B, A);
+    printf("B:\n");
+    print_matrix(B, 0);
+    //覆盖null的拷贝
+    copy_matrix(&A, B);
+    printf("A:\n");
+    print_matrix(A, 0);
+    //大小不匹配时的警告
+    copy_matrix(&A, C);
+    printf("A:\n");
+    print_matrix(A,0);
+    //按列拼合两个列数不同的矩阵
+    Matrix *cat=col_concat(A,B);
+}
+```
+
+Result: 
+
+![robust_del_cpy.png](https://s2.loli.net/2022/10/30/r2tpMAf7mnSekV3.png)
+
+#### 矩阵运算(修改传入值)
+
+```c
+// Benchmark.c (main function)
+int main()
+{
+    //被加数为空
+    Matrix *A=NULL;
+    Matrix *B=create_full(3,4,5);
+    printf("A=0+B=\n");
+    add_by(&A,B);
+    print_matrix(A,0);
+    //被减数为空
+    B=NULL;
+    subtract_by(&B,A);
+    printf("B=0-A=\n");
+    print_matrix(B,0);
+}
+```
+
+Result: 
+
+![image.png](https://s2.loli.net/2022/10/30/AMyiL6RSBpVwlnv.png)
+
+#### 矩阵计算
+
+```c
+// Benchmark.c (main function)
+int main()
+{
+    Matrix *A = create_full(3, 2, 2);
+    Matrix *B = create_full(3, 3, 3);
+    //不同形状的矩阵相加
+    Matrix *C = matrix_add(A, B);
+    //不合法的矩阵相乘
+    C = matrix_multiply(A, B);
+    //非方阵的矩阵幂
+    C = matrix_pow(A, 2);
+    //逆不存在时的负数幂
+    C=matrix_pow(B,-2);
+}
+```
+
+Result: 
+
+![robust_calc.png](https://s2.loli.net/2022/10/30/Jx2N4SXjBUD5lw8.png)
+
+#### 矩阵变换
+
+```c
+// Benchmark.c (main function)
+int main()
+{
+    Matrix *A = create_full(3, 2, 2);
+    Matrix *B = create_full(3, 3, 3);
+    //非方阵求逆
+    Matrix *I=inverse(A);
+    //非方阵求行列式
+    printf("detA=%f\n",determinant(A));
+}
+```
+
+Result: 
+
+![robust_trans.png](https://s2.loli.net/2022/10/30/hdIanKWlCuwJDom.png)
+
+## Part 4 - Difficulties & Solutions
