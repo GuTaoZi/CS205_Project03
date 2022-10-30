@@ -1,4 +1,4 @@
-- $\LaTeX$ of README.md may fail to display on github. For better experience, pls check [report in pdf format.](https://github.com/GuTaoZi/CS205_Project03/blob/master/report.pdf)
+- $\LaTeX$ of README.md may fail to display on GitHub. For better experience, pls check [report in pdf format.](https://github.com/GuTaoZi/CS205_Project03/blob/master/doc/Report.pdf)
 
 # CS205 C/ C++ Programming Project03 
 
@@ -7,6 +7,24 @@
 **Name**: 樊斯特(Fan Site)
 
 **SID**: 12111624
+
+### 项目结构
+
+```
+CS205_Project03
+│  CMakeLists.txt
+│  README.md
+│
+├─doc
+│  Report.pdf
+│
+├─inc
+│  MatrixC.h
+│
+└─src
+   Benchmark.c
+   MatrixC.c
+```
 
 ## Part 1 - Analysis
 
@@ -44,23 +62,6 @@
 
 - 项目对安全性要求>计算效率，因此尽可能使用浅显稳定的算法，细节处有对效率的提升。
 
-
-### 项目结构
-
-> CS205_Project03
-> │  CMakeLists.txt
-> │  README.md
-> │
-> ├─doc
-> │      Report.pdf
-> │
-> ├─inc
-> │      MatrixC.h
-> │
-> └─src
->         Benchmark.c
->         MatrixC.c
-
 ## Part 2 - Code
 
 ### 宏与结构体
@@ -89,7 +90,7 @@ typedef struct MatrixC
 
 ---
 
-**在[MatrixC.h]()头文件中，记录了本项目实现的矩阵相关的函数，经整理分为以下若干类：**
+**在[MatrixC.h](https://github.com/GuTaoZi/CS205_Project03/blob/master/inc/MatrixC.h)头文件中，记录了本项目实现的矩阵相关的函数，经整理分为以下若干类：**
 
 ### 创建矩阵
 
