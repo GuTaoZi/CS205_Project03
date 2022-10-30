@@ -32,7 +32,7 @@
 11. **矩阵运算**：矩阵加减乘、矩阵快速幂、求行列式…有两类实现：将结果存储于传入参数矩阵、将结果作为返回参数，前者节省内存，后者不影响传入矩阵。
 12. **常用变换**：矩阵上三角化、高斯消元法矩阵求逆、转置矩阵、截取矩阵…安全易用且对无法计算的情况有强鲁棒性。
 13. **文件操作**：从文件创建矩阵、输出结果到文件
-14. **项目管理**：使用shared library为项目创建共享库，使用GitHub管理项目。
+14. **项目管理**：使用CMake和GitHub管理项目。
 
 ### 模型假设
 
@@ -47,7 +47,19 @@
 
 ### 项目结构
 
-
+> CS205_Project03
+> │  CMakeLists.txt
+> │  README.md
+> │
+> ├─doc
+> │      Report.pdf
+> │
+> ├─inc
+> │      MatrixC.h
+> │
+> └─src
+>         Benchmark.c
+>         MatrixC.c
 
 ## Part 2 - Code
 
@@ -883,7 +895,7 @@ bool print_matrix_to_file(char *filename, Matrix *pmat, int precision)
 }
 ```
 
-对于规模较大的矩阵，用户会有将结果输出到指定文件的需求，本项目也进行了实现
+对于规模较大的矩阵，用户会有将结果输出到指定文件的需求，本项目也进行了实现。
 
 ## Part 3 - Result & Verification
 
